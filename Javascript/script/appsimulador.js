@@ -1,118 +1,93 @@
-// Variables globales
-const usuarios = [];
-const cursos = [];
+// Arrays y recuperación desde localStorage
+let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+let cursos = JSON.parse(localStorage.getItem("cursos")) || [];
 
-// Función para registrar usuario con rol
-function registrarUsuario() {
-  
-  //variables condicionales locales
+// DOM Elements
+const formRegistro = document.getElementById("formRegistro");
+const formCurso = document.getElementById("formCurso");
+const seccionProfesor = document.getElementById("seccionProfesor");
+const seccionAlumno = document.getElementById("seccionAlumno");
+const listaCursosProfesor = document.getElementById("listaCursosProfesor");
+const listaCursosAlumno = document.getElementById("listaCursosAlumno");
 
-  let nombre = prompt("Ingresá tu nombre:");
-  let rol = prompt("¿Sos 'profesor' o 'alumno'?").toLowerCase();
+// Usuario actual
+let usuarioActual = null;
 
-  // Push a variable global
+// Función para registrar usuario
+function registrarUsuario(nombre, rol) {
+  const usuario = { nombre, rol };
+  usuarios.push(usuario);
+  localStorage.setItem("usuarios", JSON.stringify(usuarios));
+  usuarioActual = usuario;
 
-  if( nombre !== "" && nombre !== null && (rol === "profesor" || rol === "alumno") )  
-    { let usuario = 
-      
-      {nombre: nombre,
-        rol: rol
-      };
-    
-        usuarios.push(usuario);
-    
-        alert("--Registro exitoso--\n-Nombre: " + nombre + "\n-Rol: " + rol);
-    
-        return usuario;
-    } 
-    
-    else {
-    alert(" Datos inválidos. Intentá nuevamente.");
-    return null;
-    }
-}
-
-//  Función para crear un curso (solo profesor)
-
-function crearCurso(creador) {
-  let nombreCurso = prompt("Ingresá el nombre del curso que querés crear:");
-
-  if (nombreCurso !== "" && nombreCurso !== null) 
-    
-    {cursos.push ({ nombre: nombreCurso, creador: creador.nombre });
-    
-      alert("-Curso creado: " + nombreCurso + "\n-Por: " + creador.nombre);
-    } 
-    
-  else {
-    alert(" Nombre de curso inválido.");
+  if (rol === "profesor") {
+    seccionProfesor.style.display = "block";
+  } else if (rol === "alumno") {
+    seccionAlumno.style.display = "block";
+    mostrarCursosAlumno();
   }
 }
 
-//  Función para mostrar todos los cursos disponibles
-function mostrarCursos() {
-  
+// Función para crear curso
+function crearCurso(nombreCurso, creador) {
+  const curso = { nombre: nombreCurso, creador: creador.nombre };
+  cursos.push(curso);
+  localStorage.setItem("cursos", JSON.stringify(cursos));
+  mostrarCursosProfesor(creador);
+}
+
+// Mostrar cursos creados por el profesor
+function mostrarCursosProfesor(profesor) {
+  listaCursosProfesor.innerHTML = "";
+  const cursosDelProfesor = cursos.filter(c => c.creador === profesor.nombre);
+
+  cursosDelProfesor.forEach((curso) => {
+    const li = document.createElement("li");
+    li.textContent = curso.nombre;
+    listaCursosProfesor.appendChild(li);
+  });
+}
+
+// Mostrar todos los cursos para alumnos
+function mostrarCursosAlumno() {
+  listaCursosAlumno.innerHTML = "";
+
   if (cursos.length === 0) {
-    alert("No hay cursos disponibles.");
-    } 
-    
-    else { let lista = "-Cursos disponibles:\n";
-    
-    for (let i = 0; i < cursos.length; i++) 
-      { lista += (i + 1) + ". " + cursos[i].nombre + " (Creado por " + cursos[i].creador + ")\n";}
-    
-      alert(lista);
-    
-    }
-}
-
-//  Simulador principal
-function simulador() {
-  alert("-Bienvenido/a al simulador para gestionar cursos-");
-
-  let usuarioActual = registrarUsuario();
-
-  if (usuarioActual !== null) 
-    {let continuar = true;
-
-    // Bucle del menu Profesor y alumno
-    
-    while (continuar) {
-      if (usuarioActual.rol === "profesor") {
-        let opcion = prompt("¿Qué querés hacer?\n1. Crear un curso\n2. Ver cursos\n3. Salir");
-
-        if (opcion === "1") {
-          crearCurso(usuarioActual);
-        } else if (opcion === "2") {
-          mostrarCursos();
-        } else if (opcion === "3") {
-          continuar = false;
-          alert(" Gracias por usar el simulador");
-        } else {
-          alert(" Opción inválida.");
-        }
-
-
-      } else if (usuarioActual.rol === "alumno") {
-        let opcionAlumno = prompt("¿Qué querés hacer?\n1. Ver cursos\n2. Salir");
-
-        if (opcionAlumno === "1") {
-          mostrarCursos();
-        } else if (opcionAlumno === "2") {
-          continuar = false;
-          alert(" Gracias por usar el simulador");
-        } else {
-          alert(" Opción inválida.");
-        }
-      }
-    }
+    const li = document.createElement("li");
+    li.textContent = "No hay cursos disponibles.";
+    listaCursosAlumno.appendChild(li);
+  } else {
+    cursos.forEach((curso) => {
+      const li = document.createElement("li");
+      li.textContent = `${curso.nombre} (por ${curso.creador})`;
+      listaCursosAlumno.appendChild(li);
+    });
   }
 }
 
-// Inicio del simulador
-simulador();
+// Evento: Registro de usuario
+formRegistro.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const nombre = document.getElementById("nombre").value.trim();
+  const rol = document.getElementById("rol").value;
 
+  if (nombre !== "" && rol !== "") {
+    registrarUsuario(nombre, rol);
+    formRegistro.reset();
+    formRegistro.style.display = "none";
+  }
+});
 
+// Evento: Crear curso
+formCurso.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const nombreCurso = document.getElementById("nombreCurso").value.trim();
+
+  if (nombreCurso !== "") {
+    crearCurso(nombreCurso, usuarioActual);
+    formCurso.reset();
+  }
+});
 
 
 

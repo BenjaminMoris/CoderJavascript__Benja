@@ -1,20 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-4">
+  <title>Simulador de Cursos</title>
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
+  <h1> Simulador de Cursos</h1>
+  <p>
+    Esta aplicación permite registrarse como profesor o alumno. Los profesores pueden crear cursos y los alumnos pueden ver los cursos disponibles. 
+  </p>
 
-    <h1> 1 Pre- entrega de un Simulador
-    </h1>
-   
-    <h2> 
-        Este simulador permite al usuario registrarse como profesor o alumno, crear cursos personalizados o visualizar los existentes.
-    </h2>
-    
-    <script src="./script/appsimulador.js"></script>
+  <!-- Registro de usuario -->
+  <section id="registro">
+    <h2>Registro</h2>
+    <form id="formRegistro">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" required>
 
+      <label for="rol">Rol:</label>
+      <select id="rol" required>
+        <option value="">Seleccionar</option>
+        <option value="profesor">Profesor</option>
+        <option value="alumno">Alumno</option>
+      </select>
+
+      <button type="submit">Registrarse</button>
+    </form>
+  </section>
+
+  <!--  Sección para profesores -->
+  <section id="seccionProfesor" style="display: none;">
+    <h2>Crear Curso</h2>
+    <form id="formCurso">
+      <label for="nombreCurso">Nombre del curso:</label>
+      <input type="text" id="nombreCurso" required>
+      <button type="submit">Crear curso</button>
+    </form>
+
+    <h3>Cursos creados:</h3>
+    <ul id="listaCursosProfesor"></ul>
+  </section>
+
+  <!-- Sección para alumnos -->
+  <section id="seccionAlumno" style="display: none;">
+    <h2>Cursos disponibles</h2>
+    <ul id="listaCursosAlumno"></ul>
+  </section>
+
+  <script src="./script/appsimulador.js"></script>
 </body>
 </html>
